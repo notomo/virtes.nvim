@@ -1,1 +1,1 @@
-experimental visual regression test library
+experimental neovim visual regression test library
