@@ -8,4 +8,14 @@ description = {
   license = "MIT <http://opensource.org/licenses/MIT>",
 }
 dependencies = {}
-build = {type = "builtin", modules = {["virtes.screenshot"] = "lua/virtes/screenshot.lua"}}
+build = {
+  type = "builtin",
+  modules = {
+    ["virtes.context"] = "lua/virtes/context.lua",
+    ["virtes.diff"] = "lua/virtes/diff.lua",
+    ["virtes.init"] = "lua/virtes/init.lua",
+    ["virtes.lib.path"] = "lua/virtes/lib/path.lua",
+    ["virtes.result"] = "lua/virtes/result.lua",
+    ["virtes.test"] = "lua/virtes/test.lua",
+  },
+}

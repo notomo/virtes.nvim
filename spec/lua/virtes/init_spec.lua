@@ -3,11 +3,6 @@ local helper = require("test/helper")
 
 describe("virtes", function()
 
-  before_each(function()
-    virtes._screenshot = function()
-    end
-  end)
-
   after_each(function()
     helper.after_each()
   end)
@@ -18,16 +13,16 @@ describe("virtes", function()
 
   it("can run with scenario", function()
     local created = {}
-    virtes._screenshot = function(path)
-      helper.new_file(path)
-      table.insert(created, path)
-    end
 
     virtes.setup({
       scenario = function(ctx)
         ctx:screenshot()
         vim.cmd("tabedit")
         ctx:screenshot()
+      end,
+      screenshot = function(path)
+        helper.new_file(path)
+        table.insert(created, path)
       end,
     }):run()
 
@@ -37,12 +32,12 @@ describe("virtes", function()
   end)
 
   it("writes empty replay script if diff does not exist", function()
-    virtes._screenshot = function(path)
-      helper.new_file(path)
-    end
     local test = virtes.setup({
       scenario = function(ctx)
         ctx:screenshot()
+      end,
+      screenshot = function(path)
+        helper.new_file(path)
       end,
     })
     local before = test:run({name = "before"})
@@ -58,14 +53,14 @@ describe("virtes", function()
       scenario = function(ctx)
         ctx:screenshot()
       end,
+      screenshot = function(path)
+        helper.new_file(path)
+      end,
     })
 
-    virtes._screenshot = function(path)
-      helper.new_file(path)
-    end
     local before = test:run({name = "before"})
 
-    virtes._screenshot = function(path)
+    test._screenshot = function(path)
       helper.new_file(path, [[content]])
     end
     local after = test:run({name = "after"})

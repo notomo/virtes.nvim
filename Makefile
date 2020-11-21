@@ -15,3 +15,7 @@ new_rockspec:
 test:
 	vusted --shuffle -v --helper=./spec/helper.lua
 .PHONY: test
+
+_init:
+	luarocks write_rockspec --lua-versions=5.1
+.PHONY: _init
