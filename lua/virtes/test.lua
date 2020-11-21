@@ -27,6 +27,7 @@ function Test.setup(opts)
       vim.cmd("silent! %bwipeout!")
     end,
     _screenshot = opts.screenshot or function(file_path)
+      vim.api.nvim_command("redraw!")
       return vim.api.nvim__screenshot(file_path)
     end,
   }
