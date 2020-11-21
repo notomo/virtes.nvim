@@ -11,3 +11,7 @@ new_rockspec:
 	cat ${ROCKSPEC_FILE}
 	luarocks make ${ROCKSPEC_FILE}
 .PHONY: new_rockspec
+
+test:
+	vusted --shuffle -v --helper=./spec/helper.lua
+.PHONY: test

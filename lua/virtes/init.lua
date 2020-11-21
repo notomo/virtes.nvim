@@ -1,3 +1,5 @@
+local Path = require("virtes/lib/path").Path
+
 local M = {}
 
 local Test = {}
@@ -8,19 +10,20 @@ TestContext.__index = TestContext
 
 function TestContext.create(dir_path, hash)
   local tbl = {_paths = {}, _dir = dir_path, _hash = hash}
-  vim.fn.mkdir(dir_path, "p")
+  dir_path:mkdir()
 
   return setmetatable(tbl, TestContext)
 end
 
 function TestContext.screenshot(self, name)
-  local file_path = ("%s/%s"):format(self._dir, name or #self._paths)
+  local file_path = self._dir:join(name or tostring(#self._paths + 1))
 
-  vim.fn.delete(file_path)
-  vim.api.nvim__screenshot(file_path)
+  file_path:delete()
+  local path = file_path:get()
+  M._screenshot(path)
 
   table.insert(self._paths, file_path)
-  return file_path
+  return path
 end
 
 function TestContext._run(self, scenario)
@@ -46,7 +49,7 @@ local Diffs = {}
 Diffs.__index = Diffs
 
 function Diffs.new(diffs, replay_path)
-  local tbl = {_diffs = diffs, _replay_path = replay_path}
+  local tbl = {_diffs = diffs, _replay_script_path = replay_path}
   return setmetatable(tbl, Diffs)
 end
 
@@ -56,12 +59,14 @@ function Diffs.write_replay_script(self)
     table.insert(strs, diff:to_replay_script())
   end
   if #strs > 0 then
-    table.insert(strs, ([[" source %s " ex command to show screenshots on failed]]):format(self._replay_path) .. "\n")
+    table.insert(strs, ([[" source %s " ex command to show screenshots on failed]]):format(self._replay_script_path) .. "\n")
   end
 
-  local f = io.open(self._replay_path, "w")
+  local f = io.open(self._replay_script_path, "w")
   f:write(table.concat(strs, "\n"))
   f:close()
+
+  return self._replay_script_path
 end
 
 local Diff = {}
@@ -103,7 +108,7 @@ local TestResult = {}
 TestResult.__index = TestResult
 
 function TestResult.new(paths, dir_path, replay_path)
-  local tbl = {paths = paths, dir_path = dir_path, _replay_path = replay_path}
+  local tbl = {paths = paths, dir_path = dir_path, _replay_script_path = replay_path}
   return setmetatable(tbl, TestResult)
 end
 
@@ -112,7 +117,7 @@ function TestResult.diff(self, after_result)
   for i, path in ipairs(self.paths) do
     local before = {path = path, dir = self.dir_path}
 
-    local name = vim.fn.fnamemodify(before.path, ":t")
+    local name = before.path:head()
     local after_path = after_result.paths[i]
     if after_path == nil then
       table.insert(diffs, Diff.new(name, before))
@@ -120,13 +125,13 @@ function TestResult.diff(self, after_result)
     end
 
     local after = {path = after_path, dir = after_result.dir_path}
-    local after_name = vim.fn.fnamemodify(after.path, ":t")
+    local after_name = after.path:head()
     if name ~= after_name then
       table.insert(diffs, Diff.new(name, before))
       goto continue
     end
 
-    local diff = vim.trim(vim.fn.system({"diff", "-u", before.path, after.path}))
+    local diff = vim.trim(vim.fn.system({"diff", "-u", before.path:get(), after.path:get()}))
     if #diff ~= 0 then
       table.insert(diffs, Diff.new(name, before, after))
       goto continue
@@ -135,12 +140,13 @@ function TestResult.diff(self, after_result)
     ::continue::
   end
 
-  return Diffs.new(diffs, self._replay_path)
+  return Diffs.new(diffs, self._replay_script_path)
 end
 
 function Test.run(self, opts)
-  local name = opts.hash or "HEAD"
-  local dir_path = ("%s%s"):format(self._dir, name)
+  opts = opts or {}
+  local name = opts.name or opts.hash or "HEAD"
+  local dir_path = self._dir:join(name)
   local ctx = TestContext.create(dir_path, opts.hash)
 
   self._cleanup()
@@ -151,22 +157,26 @@ function Test.run(self, opts)
     vim.api.nvim_command("cquit")
   end
 
-  return TestResult.new(ctx._paths, ctx._dir, self._replay_path)
+  return TestResult.new(ctx._paths, ctx._dir, self._replay_script_path)
 end
 
-local default_dir_path = vim.fn.getcwd() .. "/test/screenshot"
+local default_dir_path = vim.fn.getcwd() .. "/spec/screenshot"
+
+M._screenshot = function(file_path)
+  return vim.api.nvim__screenshot(file_path)
+end
 
 M.setup = function(opts)
   opts = opts or {}
-  local result_dir = vim.fn.fnamemodify(opts.result_path or default_dir_path, ":p")
-  local replay_path = result_dir .. "replay.vim"
+  local result_dir = Path.new(opts.result_dir or default_dir_path)
+  local replay_script_path = result_dir:join("replay.vim"):get()
 
-  vim.fn.delete(result_dir, "rf")
-  vim.fn.mkdir(result_dir, "p")
+  result_dir:delete()
+  result_dir:mkdir()
 
   local tbl = {
     _dir = result_dir,
-    _replay_path = replay_path,
+    _replay_script_path = replay_script_path,
     _scenario = opts.scenario or function()
     end,
     _cleanup = opts.cleanup or function()
