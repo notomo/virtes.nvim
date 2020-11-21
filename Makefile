@@ -19,3 +19,10 @@ test:
 _init:
 	luarocks write_rockspec --lua-versions=5.1
 .PHONY: _init
+
+bump:
+	echo "version: " v${VERSION}
+	test ! ${VERSION} = ""
+	git tag -a v${VERSION} -m "Bump v"${VERSION}
+	git push origin v${VERSION}
+.PHONY: bump
