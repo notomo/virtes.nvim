@@ -5,6 +5,7 @@ TestContext.__index = TestContext
 M.TestContext = TestContext
 
 function TestContext.create(dir_path, hash, screenshot_impl)
+  vim.validate({hash = {hash, "string", true}, screenshot_impl = {screenshot_impl, "function"}})
   local tbl = {_paths = {}, _dir = dir_path, _hash = hash, _screenshot = screenshot_impl}
   dir_path:mkdir()
 
@@ -12,6 +13,7 @@ function TestContext.create(dir_path, hash, screenshot_impl)
 end
 
 function TestContext.screenshot(self, name)
+  vim.validate({name = {name, "string", true}})
   local file_path = self._dir:join(name or tostring(#self._paths + 1))
 
   file_path:delete()
@@ -23,6 +25,7 @@ function TestContext.screenshot(self, name)
 end
 
 function TestContext._run(self, scenario)
+  vim.validate({scenario = {scenario, "function"}})
   local origin_branch
   if self._hash ~= nil then
     origin_branch = vim.fn.systemlist({"git", "rev-parse", "--abbrev-ref", "HEAD"})[1]

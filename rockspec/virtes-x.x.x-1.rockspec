@@ -15,6 +15,7 @@ build = {
     ["virtes.diff"] = "lua/virtes/diff.lua",
     ["virtes.init"] = "lua/virtes/init.lua",
     ["virtes.lib.path"] = "lua/virtes/lib/path.lua",
+    ["virtes.replay"] = "lua/virtes/replay.lua",
     ["virtes.result"] = "lua/virtes/result.lua",
     ["virtes.test"] = "lua/virtes/test.lua",
   },

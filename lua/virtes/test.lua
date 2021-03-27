@@ -1,6 +1,6 @@
-local Path = require("virtes/lib/path").Path
-local TestResult = require("virtes/result").TestResult
-local TestContext = require("virtes/context").TestContext
+local Path = require("virtes.lib.path").Path
+local TestResult = require("virtes.result").TestResult
+local TestContext = require("virtes.context").TestContext
 
 local M = {}
 
@@ -11,6 +11,7 @@ M.Test = Test
 local default_dir_path = vim.fn.getcwd() .. "/spec/screenshot"
 
 function Test.setup(opts)
+  vim.validate({opts = {opts, "table", true}})
   opts = opts or {}
   local result_dir = Path.new(opts.result_dir or default_dir_path)
   local replay_script_path = result_dir:join("replay.vim"):get()
@@ -35,6 +36,7 @@ function Test.setup(opts)
 end
 
 function Test.run(self, opts)
+  vim.validate({opts = {opts, "table", true}})
   opts = opts or {}
   local name = opts.name or opts.hash or "HEAD"
   local dir_path = self._dir:join(name)

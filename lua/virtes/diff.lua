@@ -1,3 +1,5 @@
+local replay = require("virtes.replay")
+
 local M = {}
 
 local Diffs = {}
@@ -14,14 +16,7 @@ function Diffs.write_replay_script(self)
   for _, diff in ipairs(self._diffs) do
     table.insert(strs, diff:to_replay_script())
   end
-  if #strs > 0 then
-    table.insert(strs, ([[" source %s " ex command to show screenshots on failed]]):format(self._replay_script_path) .. "\n")
-  end
-
-  local f = io.open(self._replay_script_path, "w")
-  f:write(table.concat(strs, "\n"))
-  f:close()
-
+  replay.write(self._replay_script_path, strs)
   return self._replay_script_path
 end
 
@@ -30,6 +25,7 @@ Diff.__index = Diff
 M.Diff = Diff
 
 function Diff.new(name, before, after)
+  vim.validate({name = {name, "string"}})
   local tbl = {name = name, before = before, after = after}
   return setmetatable(tbl, Diff)
 end
@@ -38,26 +34,14 @@ function Diff.to_replay_script(self)
   if self.after == nil then
     return table.concat({
       ([[" %s not found on after]]):format(self.name),
-
-      [[tabedit | terminal]],
-      [[setlocal bufhidden=wipe]],
-      ([[call chansend(&channel, "cat %s\n")]]):format(self.before.path),
-      ([[file virtes://%s_%s]]):format(self.before.dir, self.name),
+      replay.script(self.before.path),
     }, "\n")
   end
 
   return table.concat({
     ([[" diff found: %s %s]]):format(self.before.path, self.after.path),
-
-    [[tabedit | terminal]],
-    [[setlocal bufhidden=wipe]],
-    ([[call chansend(&channel, "cat %s\n")]]):format(self.before.path),
-    ([[file virtes://%s_%s]]):format(self.before.dir, self.name),
-
-    [[tabedit | terminal]],
-    [[setlocal bufhidden=wipe]],
-    ([[call chansend(&channel, "cat %s\n")]]):format(self.after.path),
-    ([[file virtes://%s_%s]]):format(self.after.dir, self.name),
+    replay.script(self.before.path),
+    replay.script(self.after.path),
   }, "\n")
 end
 

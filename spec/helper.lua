@@ -47,4 +47,4 @@ asserts.create("tab_count"):register_eq(function()
   return vim.fn.tabpagenr("$")
 end)
 
-package.loaded["test/helper"] = M
+package.loaded["test.helper"] = M

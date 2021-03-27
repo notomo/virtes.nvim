@@ -1,5 +1,5 @@
 local virtes = require("virtes")
-local helper = require("test/helper")
+local helper = require("test.helper")
 
 describe("virtes", function()
 
@@ -46,6 +46,24 @@ describe("virtes", function()
     local script_path = before:diff(after):write_replay_script()
 
     assert.empty_file(script_path)
+  end)
+
+  it("can write replay script", function()
+    local test = virtes.setup({
+      scenario = function(ctx)
+        ctx:screenshot()
+      end,
+      screenshot = function(path)
+        helper.new_file(path)
+      end,
+    })
+
+    local before = test:run({name = "before"})
+    local script_path = before:write_replay_script()
+    assert.no.empty_file(script_path)
+
+    vim.cmd("source " .. script_path)
+    assert.tab_count(2)
   end)
 
   it("writes replay script if diff exists", function()

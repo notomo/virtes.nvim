@@ -1,5 +1,6 @@
-local Diffs = require("virtes/diff").Diffs
-local Diff = require("virtes/diff").Diff
+local Diffs = require("virtes.diff").Diffs
+local Diff = require("virtes.diff").Diff
+local replay = require("virtes.replay")
 
 local M = {}
 
@@ -8,11 +9,13 @@ TestResult.__index = TestResult
 M.TestResult = TestResult
 
 function TestResult.new(paths, dir_path, replay_path)
+  vim.validate({paths = {paths, "table"}, replay_path = {replay_path, "string"}})
   local tbl = {paths = paths, dir_path = dir_path, _replay_script_path = replay_path}
   return setmetatable(tbl, TestResult)
 end
 
 function TestResult.diff(self, after_result)
+  vim.validate({after_result = {after_result, "table"}})
   local diffs = {}
   for i, path in ipairs(self.paths) do
     local before = {path = path, dir = self.dir_path}
@@ -41,6 +44,15 @@ function TestResult.diff(self, after_result)
   end
 
   return Diffs.new(diffs, self._replay_script_path)
+end
+
+function TestResult.write_replay_script(self)
+  local strs = vim.tbl_map(function(path)
+    return replay.script(path)
+  end, self.paths)
+  local path = self.dir_path:join("replay.vim"):get()
+  replay.write(path, strs)
+  return path
 end
 
 return M

@@ -38,6 +38,13 @@ function Path.join(self, ...)
   return self.new(path)
 end
 
+function Path.parent(self)
+  if vim.endswith(self.path, "/") then
+    return self.new(vim.fn.fnamemodify(self.path, ":h:h"))
+  end
+  return self.new(vim.fn.fnamemodify(self.path, ":h"))
+end
+
 function Path.head(self)
   if not vim.endswith(self.path, "/") or self.path == "/" then
     return vim.fn.fnamemodify(self.path, ":t")

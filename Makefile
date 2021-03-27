@@ -12,6 +12,10 @@ new_rockspec:
 	luarocks make ${ROCKSPEC_FILE}
 .PHONY: new_rockspec
 
+install:
+	luarocks make
+.PHONY: install
+
 test:
 	vusted --shuffle -v --helper=./spec/helper.lua
 .PHONY: test
