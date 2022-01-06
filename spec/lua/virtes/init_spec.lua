@@ -2,7 +2,6 @@ local virtes = require("virtes")
 local helper = require("test.helper")
 
 describe("virtes", function()
-
   after_each(function()
     helper.after_each()
   end)
@@ -40,8 +39,8 @@ describe("virtes", function()
         helper.new_file(path)
       end,
     })
-    local before = test:run({name = "before"})
-    local after = test:run({name = "after"})
+    local before = test:run({ name = "before" })
+    local after = test:run({ name = "after" })
 
     local script_path = before:diff(after):write_replay_script()
 
@@ -58,7 +57,7 @@ describe("virtes", function()
       end,
     })
 
-    local before = test:run({name = "before"})
+    local before = test:run({ name = "before" })
     local script_path = before:write_replay_script()
     assert.no.empty_file(script_path)
 
@@ -76,12 +75,12 @@ describe("virtes", function()
       end,
     })
 
-    local before = test:run({name = "before"})
+    local before = test:run({ name = "before" })
 
     test._screenshot = function(path)
       helper.new_file(path, [[content]])
     end
-    local after = test:run({name = "after"})
+    local after = test:run({ name = "after" })
 
     local script_path = before:diff(after):write_replay_script()
 

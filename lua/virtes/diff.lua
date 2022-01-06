@@ -7,7 +7,7 @@ Diffs.__index = Diffs
 M.Diffs = Diffs
 
 function Diffs.new(diffs, replay_path)
-  local tbl = {_diffs = diffs, _replay_script_path = replay_path}
+  local tbl = { _diffs = diffs, _replay_script_path = replay_path }
   return setmetatable(tbl, Diffs)
 end
 
@@ -25,8 +25,8 @@ Diff.__index = Diff
 M.Diff = Diff
 
 function Diff.new(name, before, after)
-  vim.validate({name = {name, "string"}})
-  local tbl = {name = name, before = before, after = after}
+  vim.validate({ name = { name, "string" } })
+  local tbl = { name = name, before = before, after = after }
   return setmetatable(tbl, Diff)
 end
 

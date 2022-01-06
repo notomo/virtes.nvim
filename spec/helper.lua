@@ -2,7 +2,7 @@ local M = {}
 
 M.new_file = function(path, ...)
   local f = io.open(path, "w")
-  for _, line in ipairs({...}) do
+  for _, line in ipairs({ ... }) do
     f:write(line .. "\n")
   end
   f:close()

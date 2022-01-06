@@ -5,7 +5,7 @@ Path.__index = Path
 M.Path = Path
 
 function Path.new(path)
-  local tbl = {path = vim.fn.fnamemodify(path, ":p")}
+  local tbl = { path = vim.fn.fnamemodify(path, ":p") }
   return setmetatable(tbl, Path)
 end
 
@@ -20,7 +20,7 @@ end
 function Path.join(self, ...)
   local items = {}
   local slash = false
-  for _, item in ipairs({self.path, ...}) do
+  for _, item in ipairs({ self.path, ... }) do
     if vim.endswith(item, "/") then
       item = item:sub(1, #item - 1)
       slash = true

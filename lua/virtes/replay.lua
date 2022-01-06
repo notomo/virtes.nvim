@@ -12,7 +12,7 @@ function M.script(path)
 end
 
 function M.write(path, strs)
-  vim.validate({strs = {strs, "table"}})
+  vim.validate({ strs = { strs, "table" } })
   if #strs > 0 then
     table.insert(strs, ([[" source %s " ex command to show screenshots]]):format(path) .. "\n")
   end
