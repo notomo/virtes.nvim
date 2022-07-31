@@ -2,4 +2,4 @@ experimental neovim visual regression test library
 
 ## Installation
 
-`luarocks install virtes`
+`luarocks --lua-version=5.1 install virtes`

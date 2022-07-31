@@ -1,6 +1,13 @@
-local M = {}
+local helper = require("vusted.helper")
 
-M.new_file = function(path, ...)
+function helper.before_each() end
+
+function helper.after_each()
+  helper.cleanup()
+  helper.cleanup_loaded_modules("virtes")
+end
+
+function helper.new_file(path, ...)
   local f = io.open(path, "w")
   for _, line in ipairs({ ... }) do
     f:write(line .. "\n")
@@ -8,13 +15,7 @@ M.new_file = function(path, ...)
   f:close()
 end
 
-M.after_each = function()
-  vim.cmd("silent! %bwipeout!")
-  print(" ")
-end
-
-local vassert = require("vusted.assert")
-local asserts = vassert.asserts
+local asserts = require("vusted.assert").asserts
 
 asserts.create("endswith"):register(function(self)
   return function(_, args)
@@ -47,4 +48,4 @@ asserts.create("tab_count"):register_eq(function()
   return vim.fn.tabpagenr("$")
 end)
 
-package.loaded["test.helper"] = M
+package.loaded["test.helper"] = helper

@@ -16,7 +16,7 @@ describe("virtes", function()
     virtes.setup({
       scenario = function(ctx)
         ctx:screenshot()
-        vim.cmd("tabedit")
+        vim.cmd.tabedit()
         ctx:screenshot()
       end,
       screenshot = function(path)
@@ -61,7 +61,7 @@ describe("virtes", function()
     local script_path = before:write_replay_script()
     assert.no.empty_file(script_path)
 
-    vim.cmd("source " .. script_path)
+    vim.cmd.source(script_path)
     assert.tab_count(2)
   end)
 
@@ -86,7 +86,7 @@ describe("virtes", function()
 
     assert.no.empty_file(script_path)
 
-    vim.cmd("source " .. script_path)
+    vim.cmd.source(script_path)
     assert.tab_count(3)
   end)
 end)

@@ -24,10 +24,14 @@ function Test.setup(opts)
     _replay_script_path = replay_script_path,
     _scenario = opts.scenario or function() end,
     _cleanup = opts.cleanup or function()
-      vim.cmd("silent! %bwipeout!")
+      vim.cmd.bwipeout({
+        range = { 1, vim.fn.bufnr("$") },
+        bang = true,
+        mods = { silent = true, emsg_silent = true },
+      })
     end,
     _screenshot = opts.screenshot or function(file_path)
-      vim.api.nvim_command("redraw!")
+      vim.cmd.redraw({ bang = true })
       return vim.api.nvim__screenshot(file_path)
     end,
   }
@@ -46,7 +50,7 @@ function Test.run(self, opts)
   local ok, err = ctx:_run(self._scenario)
   if not ok then
     print(err)
-    vim.api.nvim_command("cquit")
+    vim.cmd.cquit()
   end
 
   return TestResult.new(ctx._paths, ctx._dir, self._replay_script_path)
