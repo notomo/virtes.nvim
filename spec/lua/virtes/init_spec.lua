@@ -13,17 +13,19 @@ describe("virtes", function()
   it("can run with scenario", function()
     local created = {}
 
-    virtes.setup({
-      scenario = function(ctx)
-        ctx:screenshot()
-        vim.cmd.tabedit()
-        ctx:screenshot()
-      end,
-      screenshot = function(path)
-        helper.new_file(path)
-        table.insert(created, path)
-      end,
-    }):run()
+    virtes
+      .setup({
+        scenario = function(ctx)
+          ctx:screenshot()
+          vim.cmd.tabedit()
+          ctx:screenshot()
+        end,
+        screenshot = function(path)
+          helper.new_file(path)
+          table.insert(created, path)
+        end,
+      })
+      :run()
 
     assert.is_same(2, #created)
     assert.endswith("HEAD/1", created[1])
