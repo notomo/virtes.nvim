@@ -16,32 +16,31 @@ end
 
 function TestResult.diff(self, after_result)
   vim.validate({ after_result = { after_result, "table" } })
-  local diffs = {}
-  for i, path in ipairs(self.paths) do
-    local before = { path = path, dir = self.dir_path }
 
-    local name = before.path:head()
-    local after_path = after_result.paths[i]
-    if after_path == nil then
-      table.insert(diffs, Diff.new(name, before))
-      goto continue
-    end
+  local diffs = vim
+    .iter(self.paths)
+    :enumerate()
+    :map(function(i, path)
+      local before = { path = path, dir = self.dir_path }
 
-    local after = { path = after_path, dir = after_result.dir_path }
-    local after_name = after.path:head()
-    if name ~= after_name then
-      table.insert(diffs, Diff.new(name, before))
-      goto continue
-    end
+      local name = before.path:head()
+      local after_path = after_result.paths[i]
+      if after_path == nil then
+        return Diff.new(name, before)
+      end
 
-    local diff = vim.trim(vim.fn.system({ "diff", "-u", before.path:get(), after.path:get() }))
-    if #diff ~= 0 then
-      table.insert(diffs, Diff.new(name, before, after))
-      goto continue
-    end
+      local after = { path = after_path, dir = after_result.dir_path }
+      local after_name = after.path:head()
+      if name ~= after_name then
+        return Diff.new(name, before)
+      end
 
-    ::continue::
-  end
+      local diff = vim.trim(vim.fn.system({ "diff", "-u", before.path:get(), after.path:get() }))
+      if #diff ~= 0 then
+        return Diff.new(name, before, after)
+      end
+    end)
+    :totable()
 
   return Diffs.new(diffs, self._replay_script_path)
 end
