@@ -46,9 +46,12 @@ function TestResult.diff(self, after_result)
 end
 
 function TestResult.write_replay_script(self)
-  local strs = vim.tbl_map(function(path)
-    return replay.script(path)
-  end, self.paths)
+  local strs = vim
+    .iter(self.paths)
+    :map(function(path)
+      return replay.script(path)
+    end)
+    :totable()
   local path = self.dir_path:join("replay.vim"):get()
   replay.write(path, strs)
   return path
