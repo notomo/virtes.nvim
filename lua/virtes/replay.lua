@@ -18,6 +18,7 @@ function M.write(path, strs)
   end
 
   local f = io.open(path, "w")
+  assert(f, "failed to open file: " .. path)
   f:write(table.concat(strs, "\n"))
   f:close()
 end

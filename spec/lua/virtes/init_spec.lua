@@ -1,5 +1,8 @@
 local virtes = require("virtes")
 local helper = require("test.helper")
+local assert = assert
+---@cast assert +{empty_file:fun(path),same:fun(want,got),endswith:fun(want,got),tab_count:fun(want)}
+---@cast assert +{no:{empty_file:fun(path),same:fun(want,got),endswith:fun(want,got),tab_count:fun(want)}}
 
 describe("virtes", function()
   after_each(function()
@@ -27,7 +30,7 @@ describe("virtes", function()
       })
       :run()
 
-    assert.is_same(2, #created)
+    assert.same(2, #created)
     assert.endswith("HEAD/1", created[1])
     assert.endswith("HEAD/2", created[2])
   end)

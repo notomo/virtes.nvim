@@ -9,6 +9,7 @@ end
 
 function helper.new_file(path, ...)
   local f = io.open(path, "w")
+  assert(f, "failed to open file: " .. path)
   for _, line in ipairs({ ... }) do
     f:write(line .. "\n")
   end
