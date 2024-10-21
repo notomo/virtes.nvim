@@ -24,8 +24,8 @@ local Diff = {}
 Diff.__index = Diff
 M.Diff = Diff
 
+--- @param name string
 function Diff.new(name, before, after)
-  vim.validate({ name = { name, "string" } })
   local tbl = { name = name, before = before, after = after }
   return setmetatable(tbl, Diff)
 end

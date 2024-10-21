@@ -8,15 +8,16 @@ local TestResult = {}
 TestResult.__index = TestResult
 M.TestResult = TestResult
 
+--- @param paths table[]
+--- @param dir_path table
+--- @param replay_path string
 function TestResult.new(paths, dir_path, replay_path)
-  vim.validate({ paths = { paths, "table" }, replay_path = { replay_path, "string" } })
   local tbl = { paths = paths, dir_path = dir_path, _replay_script_path = replay_path }
   return setmetatable(tbl, TestResult)
 end
 
+--- @param after_result table
 function TestResult.diff(self, after_result)
-  vim.validate({ after_result = { after_result, "table" } })
-
   local diffs = vim
     .iter(self.paths)
     :enumerate()
