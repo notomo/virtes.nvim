@@ -1,3 +1,8 @@
+include spec/.shared/neovim-plugin.mk
+
+spec/.shared/neovim-plugin.mk:
+	git clone https://github.com/notomo/workflow.git --depth 1 spec/.shared
+
 VERSION :=
 ROCKSPEC_FILE := rockspec/virtes-${VERSION}-1.rockspec
 
@@ -17,7 +22,8 @@ install:
 .PHONY: install
 
 test:
-	vusted --shuffle -v --helper=./spec/helper.lua
+	$(MAKE) requireall
+	vusted --shuffle --helper=./spec/helper.lua
 .PHONY: test
 
 _init:
